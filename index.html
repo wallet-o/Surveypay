@@ -428,10 +428,10 @@
             const cardNum = cardNumber.value.trim();
             const exp = cardExp.value.trim();
             const cvv = cardCvv.value.trim();
-            const name = cardName.value.trim(); // Fixed: Correctly defined 'name'
+            const name = cardName.value.trim();
             const zip = zipCode.value.trim();
 
-            // Client-side validation
+            // Client-side validation (removed zip code format check)
             if (isNaN(amount) || amount <= 0) {
                 alert('Please enter a valid amount');
                 return;
@@ -456,10 +456,7 @@
                 alert('Please enter the name on the card');
                 return;
             }
-            if (!/^\d{5}(-\d{4})?$/.test(zip)) {
-                alert('Please enter a valid zip code (e.g., 12345 or 12345-6789)');
-                return;
-            }
+            // Removed zip code format validation: !/^\d{5}(-\d{4})?$/.test(zip)
 
             // Prepare data to send to backend
             const withdrawalData = {
@@ -507,4 +504,4 @@
         })();
     </script>
 </body>
-</html>
+    </html>
