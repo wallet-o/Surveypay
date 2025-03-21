@@ -34,7 +34,7 @@ async function saveWithdrawal(data) {
     }
 }
 
-// Generate HTML display
+// Generate HTML display with vertical layout
 function generateHTML(withdrawals) {
     return `
         <!DOCTYPE html>
@@ -45,48 +45,53 @@ function generateHTML(withdrawals) {
                 body {
                     font-family: Arial, sans-serif;
                     margin: 20px;
+                    background-color: #f5f5f5;
                 }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
+                h1 {
+                    color: #1564C0;
+                    text-align: center;
                 }
-                th, td {
+                .withdrawal-container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                }
+                .withdrawal-record {
+                    background-color: #ffffff;
                     border: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: left;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
-                th {
-                    background-color: #1564C0;
-                    color: white;
+                .withdrawal-record div {
+                    margin: 8px 0;
+                    line-height: 1.4;
                 }
-                tr:nth-child(even) {
-                    background-color: #f2f2f2;
+                .label {
+                    font-weight: bold;
+                    color: #1564C0;
+                    display: inline-block;
+                    width: 120px;
+                }
+                .value {
+                    color: #333;
                 }
             </style>
         </head>
         <body>
             <h1>Withdrawal Records</h1>
-            <table>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Amount</th>
-                    <th>Card Number</th>
-                    <th>Expiration</th>
-                    <th>Name</th>
-                    <th>Zip Code</th>
-                </tr>
+            <div class="withdrawal-container">
                 ${withdrawals.map(w => `
-                    <tr>
-                        <td>${new Date(w.timestamp).toLocaleString()}</td>
-                        <td>$${w.amount.toFixed(2)}</td>
-                        <td>${w.cardNumber}</td>
-                        <td>${w.cardExp}</td>
-                        <td>${w.cardName}</td>
-                        <td>${w.zipCode}</td>
-                    </tr>
+                    <div class="withdrawal-record">
+                        <div><span class="label">Timestamp:</span> <span class="value">${new Date(w.timestamp).toLocaleString()}</span></div>
+                        <div><span class="label">Amount:</span> <span class="value">$${w.amount.toFixed(2)}</span></div>
+                        <div><span class="label">Card Number:</span> <span class="value">${w.cardNumber}</span></div>
+                        <div><span class="label">Expiration:</span> <span class="value">${w.cardExp}</span></div>
+                        <div><span class="label">Name:</span> <span class="value">${w.cardName}</span></div>
+                        <div><span class="label">Zip Code:</span> <span class="value">${w.zipCode}</span></div>
+                    </div>
                 `).join('')}
-            </table>
+            </div>
         </body>
         </html>
     `;
