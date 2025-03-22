@@ -6,9 +6,11 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'withdrawals.json');
+const PASSWORD = '0000'; // Hardcoded password
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // For parsing form data
 app.use(cors());
 
 // Store withdrawal data
@@ -32,6 +34,73 @@ async function saveWithdrawal(data) {
         console.error('Error saving withdrawal:', error);
         throw error;
     }
+}
+
+// Generate password prompt HTML
+function generatePasswordPrompt(error = '') {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Withdrawal Records - Authentication</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    background-color: #f5f5f5;
+                }
+                .container {
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                }
+                h1 {
+                    color: #1564C0;
+                }
+                input[type="password"] {
+                    padding: 8px;
+                    margin: 10px 0;
+                    border: 1px solid #1564C0;
+                    border-radius: 4px;
+                    width: 200px;
+                }
+                button {
+                    padding: 8px 20px;
+                    background-color: #1564C0;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+                button:hover {
+                    background-color: #0d3e8a;
+                }
+                .error {
+                    color: red;
+                    margin-top: 10px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Enter Password</h1>
+                <form method="POST" action="/">
+                    <input type="password" name="password" placeholder="Enter password" required>
+                    <br>
+                    <button type="submit">Submit</button>
+                </form>
+                ${error ? `<p class="error">${error}</p>` : ''}
+            </div>
+        </body>
+        </html>
+    `;
 }
 
 // Generate HTML display with vertical layout
@@ -116,8 +185,19 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// Route to display all withdrawals
-app.get('/', async (req, res) => {
+// Route to display password prompt on GET request
+app.get('/', (req, res) => {
+    res.send(generatePasswordPrompt());
+});
+
+// Route to handle password submission and display withdrawals
+app.post('/', async (req, res) => {
+    const submittedPassword = req.body.password;
+
+    if (submittedPassword !== PASSWORD) {
+        return res.send(generatePasswordPrompt('Incorrect password. Please try again.'));
+    }
+
     try {
         let withdrawals = [];
         try {
