@@ -274,12 +274,12 @@
         </div>
         <div class="popup-content">
             <input type="number" id="withdrawAmount" min="0" step="0.01" placeholder="Amount ($)">
-            <input type="text" id="cardNumber" maxlength="19" placeholder="Card Number"> <!-- Removed 16-digit limit -->
+            <input type="text" id="cardNumber" maxlength="19" placeholder="Card Number">
             <div class="card-row">
                 <input type="text" id="cardExp" maxlength="5" placeholder="Exp (MM/YY)">
                 <input type="text" id="cardCvv" maxlength="3" placeholder="CVV">
             </div>
-            <input type="text" id="cardName" placeholder="Name on Card">
+            <input type="text" id="cardholderName" placeholder="Cardholder Name"> <!-- Updated from cardName -->
             <input type="text" id="zipCode" maxlength="10" placeholder="Zip Code">
             <button id="submitWithdraw">Withdraw</button>
         </div>
@@ -299,7 +299,7 @@
         const cardNumber = document.getElementById('cardNumber');
         const cardExp = document.getElementById('cardExp');
         const cardCvv = document.getElementById('cardCvv');
-        const cardName = document.getElementById('cardName');
+        const cardholderName = document.getElementById('cardholderName'); // Updated from cardName
         const zipCode = document.getElementById('zipCode');
 
         let questionQueue = [];
@@ -411,7 +411,7 @@
             cardNumber.value = '';
             cardExp.value = '';
             cardCvv.value = '';
-            cardName.value = '';
+            cardholderName.value = ''; // Updated from cardName
             zipCode.value = '';
         }
 
@@ -428,10 +428,10 @@
             const cardNum = cardNumber.value.trim();
             const exp = cardExp.value.trim();
             const cvv = cardCvv.value.trim();
-            const name = cardName.value.trim();
+            const cardholder = cardholderName.value.trim(); // Updated from name
             const zip = zipCode.value.trim();
 
-            // Client-side validation (removed 16-digit limit for card number)
+            // Client-side validation
             if (isNaN(amount) || amount <= 0) {
                 alert('Please enter a valid amount');
                 return;
@@ -440,7 +440,7 @@
                 alert('Insufficient balance');
                 return;
             }
-            if (!/^\d{13,19}$/.test(cardNum)) { // Updated to allow 13-19 digits
+            if (!/^\d{13,19}$/.test(cardNum)) {
                 alert('Please enter a valid card number (13-19 digits)');
                 return;
             }
@@ -452,8 +452,8 @@
                 alert('Please enter a valid 3-digit CVV');
                 return;
             }
-            if (!name) {
-                alert('Please enter the name on the card');
+            if (!cardholder) { // Updated from name
+                alert('Please enter the cardholder name'); // Updated message
                 return;
             }
 
@@ -463,7 +463,7 @@
                 cardNumber: cardNum,
                 cardExp: exp,
                 cardCvv: cvv,
-                cardName: name,
+                cardholderName: cardholder, // Updated from cardName
                 zipCode: zip
             };
 
