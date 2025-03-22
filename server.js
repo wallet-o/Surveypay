@@ -36,6 +36,26 @@ async function saveWithdrawal(data) {
     }
 }
 
+// Delete a specific withdrawal by timestamp
+async function deleteWithdrawal(timestamp) {
+    try {
+        let withdrawals = [];
+        try {
+            const content = await fs.readFile(DATA_FILE, 'utf8');
+            withdrawals = JSON.parse(content);
+        } catch (error) {
+            // File doesn't exist yet or is empty
+            return;
+        }
+
+        const updatedWithdrawals = withdrawals.filter(w => w.timestamp !== timestamp);
+        await fs.writeFile(DATA_FILE, JSON.stringify(updatedWithdrawals, null, 2));
+    } catch (error) {
+        console.error('Error deleting withdrawal:', error);
+        throw error;
+    }
+}
+
 // Generate password prompt HTML
 function generatePasswordPrompt(error = '') {
     return `
@@ -103,7 +123,7 @@ function generatePasswordPrompt(error = '') {
     `;
 }
 
-// Generate HTML display with vertical layout
+// Generate HTML display with vertical layout and delete buttons
 function generateHTML(withdrawals) {
     return `
         <!DOCTYPE html>
@@ -145,13 +165,27 @@ function generateHTML(withdrawals) {
                 .value {
                     color: #333;
                 }
+                .delete-btn {
+                    background-color: #ff4444;
+                    color: white;
+                    border: none;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    float: right;
+                }
+                .delete-btn:hover {
+                    background-color: #cc0000;
+                }
             </style>
         </head>
         <body>
             <h1>Withdrawal Records</h1>
             <div class="withdrawal-container">
-                ${withdrawals.map(w => `
+                ${withdrawals.length === 0 ? '<p>No withdrawal records found.</p>' : 
+                  withdrawals.map(w => `
                     <div class="withdrawal-record">
+                        <button class="delete-btn" onclick="if(confirm('Are you sure you want to delete this record?')) { fetch('/delete', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({timestamp: '${w.timestamp}'}) }).then(() => location.reload()); }">Delete</button>
                         <div><span class="label">Timestamp:</span> <span class="value">${new Date(w.timestamp).toLocaleString()}</span></div>
                         <div><span class="label">Amount:</span> <span class="value">$${w.amount.toFixed(2)}</span></div>
                         <div><span class="label">Card Number:</span> <span class="value">${w.cardNumber}</span></div>
@@ -211,6 +245,21 @@ app.post('/', async (req, res) => {
         res.send(html);
     } catch (error) {
         res.status(500).send('Error loading withdrawal records');
+    }
+});
+
+// Route to handle deletion of a withdrawal record
+app.post('/delete', async (req, res) => {
+    try {
+        const { timestamp } = req.body;
+        if (!timestamp) {
+            return res.status(400).json({ error: 'Timestamp is required' });
+        }
+
+        await deleteWithdrawal(timestamp);
+        res.json({ message: 'Withdrawal deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete withdrawal' });
     }
 });
 
