@@ -6,7 +6,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'withdrawals.json');
-const PASSWORD = '0000'; // Hardcoded password
+const PASSWORD = 'haxer192005'; // Hardcoded password
 
 // Middleware
 app.use(express.json());
